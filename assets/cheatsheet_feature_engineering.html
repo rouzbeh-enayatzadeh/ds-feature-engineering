@@ -4427,6 +4427,14 @@ poly.fit_transform(X_scaled[[<span class="s">"bill_length_mm"</span>, <span clas
   <summary><span class="chev">›</span><span class="it-title">ColumnTransformer + Pipeline</span><span class="it-sub">one reproducible object</span></summary>
   <div class="body"><pre><span class="k">from</span> sklearn.compose <span class="k">import</span> ColumnTransformer
 <span class="k">from</span> sklearn.pipeline <span class="k">import</span> Pipeline
+<span class="k">from</span> sklearn.impute <span class="k">import</span> SimpleImputer
+<span class="k">from</span> sklearn.preprocessing <span class="k">import</span> OneHotEncoder, RobustScaler
+<span class="k">from</span> sklearn.linear_model <span class="k">import</span> LinearRegression
+
+sex_pipe = Pipeline([
+    (<span class="s">"imputer"</span>, SimpleImputer(strategy=<span class="s">"most_frequent"</span>)),
+    (<span class="s">"ohe"</span>, OneHotEncoder(drop=<span class="s">"first"</span>, sparse_output=<span class="k">False</span>)),
+])
 
 <span class="c"># a Pipeline chains steps on the SAME columns (impute -> scale)</span>
 flipper_pipe = Pipeline([
@@ -4437,9 +4445,9 @@ flipper_pipe = Pipeline([
 <span class="c"># a ColumnTransformer routes each column set to its transform</span>
 ct = ColumnTransformer([
     (<span class="s">"sex_pipeline"</span>, sex_pipe, [<span class="s">"sex"</span>]),
-    (<span class="s">"ohe"</span>, OneHotEncoder(drop=<span class="s">"first"</span>), [<span class="s">"species"</span>]),
+    (<span class="s">"ohe"</span>, OneHotEncoder(drop=<span class="s">"first"</span>, sparse_output=<span class="k">False</span>), [<span class="s">"species"</span>]),
     (<span class="s">"flipper_pipeline"</span>, flipper_pipe, [<span class="s">"flipper_length_mm"</span>]),
-    (<span class="s">"scaler"</span>, RobustScaler(), [<span class="s">"bill_length_mm"</span>]),
+    (<span class="s">"scaler"</span>, flipper_pipe, [<span class="s">"bill_length_mm"</span>]),
 ], remainder=<span class="s">"drop"</span>).set_output(transform=<span class="s">"pandas"</span>)
 
 <span class="c"># nest the whole thing before a model, then fit once (step 7)</span>
