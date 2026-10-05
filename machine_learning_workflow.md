@@ -32,10 +32,18 @@ After you collect your data, you should **split the dataset** into three distinc
 The reason for this division is to ensure that you can accurately assess your model's performance on unseen data. Here’s how it works:
 
 - **Training Data**: This is the main part of your dataset and is used to train your model. The model learns from this data, adjusting its parameters to fit the data as closely as possible.
-- **Validation Data**: This subset is used to fine-tune the model's configurations and to select the best version of the model during the training process. It helps in optimizing model parameters and avoiding overfitting.
+- **Validation Data**: Use this subset to select hyperparameters, preprocessing choices, and model families. Model parameters are fitted on training data, not validation data. Repeatedly adapting to validation results can also overfit.
 - **Test Data**: You don’t use this data until the final step of your workflow. This set is crucial because it acts as new, unseen data for the model, simulating how the model will perform in the real world. After all adjustments and selections have been made using the training and validation sets, the test data gives you a final evaluation to see how well your model is likely to perform on data it has never seen before.
 
 ### Step 4 - Data Exploration
+
+Explore training data only. Fit imputers, scalers, encoders, and feature-selection
+rules on training data, then reuse them on held-out data. A pipeline inside
+cross-validation refits these steps separately in each training fold.
+
+Cross-validation can replace a dedicated validation set, but still needs an
+untouched test set for final evaluation. Split by time or entity when random
+row splits would mix future information or related observations.
 
 Before you start modeling, it's crucial to conduct exploratory data analysis (EDA). This step helps you understand the data's structure, identify any outliers, and explore relationships between variables. EDA also involves cleaning the data to ensure accuracy in your analyses. Here’s a checklist to guide you through the process:
 
@@ -74,7 +82,15 @@ Before the model is trained, **hyperparameters** (which control the learning pro
 
 ### Step 9 - Calculate Test Score
 
-After the iterative process, you should select the optimal model and retrain it using the combined training and validation datasets. During this phase, maintain the same features and best hyperparameters you have found before. Finally, you are ready to calculate the test score using the test data.
+Freeze the chosen features, preprocessing recipe, hyperparameters, and metric.
+Refit the complete pipeline on training plus validation data, then evaluate
+once on the untouched test set. With cross-validation and `refit=True`, a
+scikit-learn search already refits its best pipeline on all data passed to
+`fit`. Do not tune again based on the test result.
+
+Report the limits of this estimate: sample size, population coverage, possible
+distribution shift, and the costs of different errors. A high test score is
+not by itself evidence that deployment is appropriate.
 
 ### Step 10 - Deploy & Monitor
 
