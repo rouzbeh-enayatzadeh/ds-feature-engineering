@@ -4108,8 +4108,8 @@ imp.transform(X_train[[<span class="s">"sex"</span>]])
 
 SimpleImputer(strategy=<span class="s">"median"</span>).fit(X_train[num])  <span class="c"># numeric</span></pre><div class="out"><span class="out-label">learned statistics_</span><pre class="npout">SimpleImputer(strategy='most_frequent') on 'sex':
   statistics_ = ['Female']
-SimpleImputer(strategy='median') on numeric:
-  statistics_ = [198.   17.3]</pre></div><div class="out"><span class="out-label">sex counts BEFORE (NaN present)</span><div class="out-scroll"><table class="dataframe dataframe">
+SimpleImputer(strategy='median') on [bill_length_mm, bill_depth_mm, flipper_length_mm]:
+  statistics_ = [45.2, 17.3, 198.0]</pre></div><div class="out"><span class="out-label">sex counts BEFORE (NaN present)</span><div class="out-scroll"><table class="dataframe dataframe">
   <thead>
     <tr style="text-align: left;">
       <th></th>
@@ -4431,7 +4431,7 @@ poly.fit_transform(X_scaled[[<span class="s">"bill_length_mm"</span>, <span clas
       <td>0.68</td>
     </tr>
   </tbody>
-</table></div></div><div class="tip">Models non-linear relationships. <code>interaction_only=True</code> keeps only cross terms (x&middot;y), dropping x&sup2;, y&sup2;.</div></div>
+</table></div></div><div class="tip">Lets a linear model capture non-linear relationships in its inputs. <code>interaction_only=True</code> retains the original features and cross terms (x&middot;y), but drops x&sup2; and y&sup2;. <code>include_bias=False</code> omits the constant column.</div></div>
 </details></section><section class="sec sec-loop"><div class="eyebrow">Steps 5&ndash;7 · Assemble &amp; Train</div><details class="item" open>
   <summary><span class="chev">›</span><span class="it-title">ColumnTransformer + Pipeline</span><span class="it-sub">one reproducible object</span></summary>
   <div class="body"><pre><span class="k">from</span> sklearn.compose <span class="k">import</span> ColumnTransformer
