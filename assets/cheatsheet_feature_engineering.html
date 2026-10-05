@@ -4022,7 +4022,7 @@ target_variable = <span class="s">"body_mass_g"</span>   <span class="c"># regre
 
 df = pd.read_csv(<span class="s">"./data/penguins.csv"</span>)
 
-numerical   = [<span class="s">"bill_length_mm"</span>, <span class="s">"bill_depth_mm"</span>, <span class="s">"flipper_length_mm"</span>]
+num = numerical = [<span class="s">"bill_length_mm"</span>, <span class="s">"bill_depth_mm"</span>, <span class="s">"flipper_length_mm"</span>]
 categorical = [<span class="s">"species"</span>, <span class="s">"island"</span>, <span class="s">"sex"</span>]
 
 X = df[numerical + categorical]   <span class="c"># feature matrix</span>
@@ -4209,6 +4209,9 @@ feature_names_out = ['species_Chinstrap', 'species_Gentoo']
   <summary><span class="chev">›</span><span class="it-title">OrdinalEncoder</span><span class="it-sub">categories with a natural order</span></summary>
   <div class="body"><pre><span class="k">from</span> sklearn.preprocessing <span class="k">import</span> OrdinalEncoder
 
+<span class="c"># A small ordered-category example, separate from the penguin data.</span>
+edu = pd.DataFrame({<span class="s">"education_level"</span>: [<span class="s">"Bachelor's"</span>, <span class="s">"High School"</span>,
+    <span class="s">"Doctorate"</span>, <span class="s">"Master's"</span>, <span class="s">"Doctorate"</span>]})
 oe = OrdinalEncoder(categories=[[<span class="s">"High School"</span>, <span class="s">"Bachelor's"</span>,
      <span class="s">"Master's"</span>, <span class="s">"Doctorate"</span>]], dtype=int)
 oe.fit_transform(edu[[<span class="s">"education_level"</span>]])</pre><div class="out"><span class="out-label">ordinal encoding (order preserved)</span><div class="out-scroll"><table class="dataframe dataframe">
@@ -4244,10 +4247,13 @@ oe.fit_transform(edu[[<span class="s">"education_level"</span>]])</pre><div clas
 </details></section><section class="sec sec-loop"><div class="eyebrow">Step 5c · Discretization</div><details class="item">
   <summary><span class="chev">›</span><span class="it-title">KBinsDiscretizer</span><span class="it-sub">continuous into bins</span></summary>
   <div class="body"><pre><span class="k">from</span> sklearn.preprocessing <span class="k">import</span> KBinsDiscretizer
+<span class="k">from</span> sklearn.impute <span class="k">import</span> SimpleImputer
 
+<span class="c"># Learn replacements on training rows before learning bin boundaries.</span>
+bill_imputed = SimpleImputer(strategy=<span class="s">"median"</span>).set_output(transform=<span class="s">"pandas"</span>).fit_transform(X_train[[<span class="s">"bill_length_mm"</span>]])
 kb = KBinsDiscretizer(n_bins=5, encode=<span class="s">"onehot-dense"</span>,
-      strategy=<span class="s">"quantile"</span>).set_output(transform=<span class="s">"pandas"</span>)
-kb.fit_transform(X_train[[<span class="s">"bill_length_mm"</span>]])</pre><div class="out"><span class="out-label">learned bin edges</span><pre class="npout">bin_edges_ (quintiles) for bill_length_mm:
+      strategy=<span class="s">"quantile"</span>, quantile_method=<span class="s">"linear"</span>).set_output(transform=<span class="s">"pandas"</span>)
+kb.fit_transform(bill_imputed)</pre><div class="out"><span class="out-label">learned bin edges</span><pre class="npout">bin_edges_ (quintiles) for bill_length_mm:
   [32.1, 38.6, 42.3, 46.2, 49.5, 59.6]</pre></div><div class="out"><span class="out-label">binned bill_length (one-hot)</span><div class="out-scroll"><table class="dataframe dataframe">
   <thead>
     <tr style="text-align: left;">
@@ -4377,6 +4383,8 @@ FunctionTransformer(np.log1p)   <span class="c"># log transform for skew</span><
 
 poly = PolynomialFeatures(degree=2, interaction_only=<span class="k">False</span>,
        include_bias=<span class="k">False</span>).set_output(transform=<span class="s">"pandas"</span>)
+imputed = SimpleImputer(strategy=<span class="s">"median"</span>).set_output(transform=<span class="s">"pandas"</span>).fit_transform(X_train[num])
+X_scaled = MinMaxScaler().set_output(transform=<span class="s">"pandas"</span>).fit_transform(imputed)
 poly.fit_transform(X_scaled[[<span class="s">"bill_length_mm"</span>, <span class="s">"flipper_length_mm"</span>]])</pre><div class="out"><span class="out-label">degree-2 features (note the interaction column)</span><div class="out-scroll"><table class="dataframe dataframe">
   <thead>
     <tr style="text-align: left;">
