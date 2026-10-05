@@ -29,6 +29,7 @@ Work through the notebooks in order. The `1.x` notebooks cover the basics, the `
 | [**Machine Learning Workflow**](machine_learning_workflow.md) | Background reading on where feature engineering fits in the ML workflow. |
 | [**Data**](data/) | Datasets used across the notebooks. |
 | [**Assets**](assets/) | Images used in the notebooks and cheatsheet. |
+| [**Visual Reference**](assets/cheatsheet_feature_engineering.html) | Optional browser-based summary with saved illustrations. Run the notebooks for current results. |
 | [**Solutions**](solutions/) | Reference solutions. |
 | [**pyproject.toml**](pyproject.toml) | Project configuration and dependencies. |
 | [**uv.lock**](uv.lock) | Dependency lock file. |
