@@ -4002,8 +4002,8 @@ return Plotly;
     <span class="eyebrow-top">Data Science · Reference</span>
   </div>
   <h1><span class="accent">Feature Engineering</span> in the ML Workflow</h1>
-  <p>A scikit-learn feature engineering reference, mapped onto the ten-step machine learning workflow. Feature engineering is the iterative heart of the loop (steps 5&ndash;8). Click any item to expand its code and real output.</p>
-  <div class="hint"><b>Tip:</b> every example is live output from the Palmer Penguins dataset · the goal is predicting <b>body_mass_g</b></div>
+  <p>A scikit-learn feature engineering reference, mapped onto the ten-step machine learning workflow. Feature engineering is the iterative heart of the loop (steps 5&ndash;8). Click any item to expand its code and illustrative output.</p>
+  <div class="hint"><b>Tip:</b> saved examples come from different Palmer Penguins runs; rerun the notebooks for current values · the goal is predicting <b>body_mass_g</b></div>
 </header>
 <section class="workflow-band"><div class="wf-title">The machine learning workflow</div><div class="workflow"><div class="wf-step"><span class="wf-num">1</span><span class="wf-label">Define<br>Goal</span></div><span class="wf-arrow">&rarr;</span><div class="wf-step"><span class="wf-num">2</span><span class="wf-label">Get<br>Data</span></div><span class="wf-arrow">&rarr;</span><div class="wf-step"><span class="wf-num">3</span><span class="wf-label">Train/Val/<br>Test Split</span></div><span class="wf-arrow">&rarr;</span><div class="wf-step"><span class="wf-num">4</span><span class="wf-label">Explore<br>(EDA)</span></div><span class="wf-arrow">&rarr;</span><div class="wf-loop"><div class="wf-loop-tag">&#8635; Steps 5&ndash;8 &middot; iterative loop</div><div class="wf-loop-steps"><div class="wf-step"><span class="wf-num">5</span><span class="wf-label">Feature<br>Engineering</span></div><div class="wf-step"><span class="wf-num">6</span><span class="wf-label">Tune<br>Hyperparams</span></div><div class="wf-step"><span class="wf-num">7</span><span class="wf-label">Train<br>Model</span></div><div class="wf-step"><span class="wf-num">8</span><span class="wf-label">Validate<br>Score</span></div></div><div class="wf-loop-note">Feature engineering lives here</div></div><span class="wf-arrow">&rarr;</span><div class="wf-step"><span class="wf-num">9</span><span class="wf-label">Test<br>Score</span></div><span class="wf-arrow">&rarr;</span><div class="wf-step"><span class="wf-num">10</span><span class="wf-label">Deploy &amp;<br>Monitor</span></div></div></section>
 <main>
@@ -4204,7 +4204,7 @@ feature_names_out = ['species_Chinstrap', 'species_Gentoo']
       <td>1.00</td>
     </tr>
   </tbody>
-</table></div></div><div class="tip"><code>drop="first"</code> avoids collinearity. Like pandas <code>get_dummies()</code>.</div></div>
+</table></div></div><div class="tip"><code>drop="first"</code> removes redundant indicators for an unregularized linear model with an intercept. Regularized models can keep all categories. Unknown categories need an explicit policy.</div></div>
 </details><details class="item">
   <summary><span class="chev">›</span><span class="it-title">OrdinalEncoder</span><span class="it-sub">categories with a natural order</span></summary>
   <div class="body"><pre><span class="k">from</span> sklearn.preprocessing <span class="k">import</span> OrdinalEncoder
@@ -4307,9 +4307,9 @@ kb.fit_transform(X_train[[<span class="s">"bill_length_mm"</span>]])</pre><div c
       <td>0.00</td>
     </tr>
   </tbody>
-</table></div></div><div class="tip"><code>"quantile"</code> = equal counts (pandas <code>qcut</code>); <code>"uniform"</code> = equal width (<code>cut</code>).</div></div>
+</table></div></div><div class="tip"><code>"quantile"</code> = approximately equal counts; ties matter (pandas <code>qcut</code>); <code>"uniform"</code> = equal width (<code>cut</code>).</div></div>
 </details></section><section class="sec sec-loop"><div class="eyebrow">Step 5d · Feature Scaling</div><details class="item">
-  <summary><span class="chev">›</span><span class="it-title">MinMaxScaler</span><span class="it-sub">squeeze into [0, 1]</span></summary>
+  <summary><span class="chev">›</span><span class="it-title">MinMaxScaler</span><span class="it-sub">training range [0, 1]; new values may exceed it</span></summary>
   <div class="body"><pre><span class="k">from</span> sklearn.preprocessing <span class="k">import</span> MinMaxScaler
 
 MinMaxScaler().set_output(transform=<span class="s">"pandas"</span>).fit_transform(X_train[num])</pre><div class="out"><span class="out-label">after scaling: min=0, max=1</span><div class="out-scroll"><table class="dataframe dataframe">
@@ -4337,7 +4337,7 @@ MinMaxScaler().set_output(transform=<span class="s">"pandas"</span>).fit_transfo
   </tbody>
 </table></div></div></div>
 </details><details class="item">
-  <summary><span class="chev">›</span><span class="it-title">StandardScaler</span><span class="it-sub">mean 0, std 1</span></summary>
+  <summary><span class="chev">›</span><span class="it-title">StandardScaler</span><span class="it-sub">training mean 0, std 1 for nonconstant columns</span></summary>
   <div class="body"><pre><span class="k">from</span> sklearn.preprocessing <span class="k">import</span> StandardScaler
 
 StandardScaler().set_output(transform=<span class="s">"pandas"</span>).fit_transform(X_train[num])</pre><div class="out"><span class="out-label">after scaling: mean~0, std~1</span><div class="out-scroll"><table class="dataframe dataframe">
@@ -4365,12 +4365,12 @@ StandardScaler().set_output(transform=<span class="s">"pandas"</span>).fit_trans
   </tbody>
 </table></div></div></div>
 </details><details class="item">
-  <summary><span class="chev">›</span><span class="it-title">RobustScaler &amp; log</span><span class="it-sub">outlier-robust &amp; skew fixes</span></summary>
+  <summary><span class="chev">›</span><span class="it-title">RobustScaler &amp; log</span><span class="it-sub">robust statistics &amp; optional skew reduction</span></summary>
   <div class="body"><pre><span class="k">from</span> sklearn.preprocessing <span class="k">import</span> RobustScaler, FunctionTransformer
 <span class="k">import</span> numpy <span class="k">as</span> np
 
 RobustScaler()                  <span class="c"># median & IQR, robust to outliers</span>
-FunctionTransformer(np.log1p)   <span class="c"># log transform for skew</span></pre><div class="tip">Scale so large-range features (body mass) don't dominate distance-based models.</div></div>
+FunctionTransformer(np.log1p)   <span class="c"># log transform for skew</span></pre><div class="tip">Scale input features when units distort distances; body mass is the target here, not an input. RobustScaler does not remove outliers. Log transforms require a valid domain and do not guarantee symmetry.</div></div>
 </details></section><section class="sec sec-loop"><div class="eyebrow">Step 5e · Feature Expansion</div><details class="item">
   <summary><span class="chev">›</span><span class="it-title">PolynomialFeatures</span><span class="it-sub">powers &amp; interaction terms</span></summary>
   <div class="body"><pre><span class="k">from</span> sklearn.preprocessing <span class="k">import</span> PolynomialFeatures
@@ -4527,14 +4527,14 @@ model.fit(X_train, y_train)</pre><div class="out"><span class="out-label">Column
   <div class="body"><pre>train_r2 = model.score(X_train, y_train)
 val_r2   = model.score(X_val,   y_val)
 <span class="c"># if val_r2 is poor: add/adjust features, re-tune, re-train (loop)</span></pre><div class="out"><span class="out-label">R2 (train vs held-out)</span><pre class="npout">training r2 = 0.8629
-test r2     = 0.8727</pre></div><div class="tip">A big gap between train and validation means overfitting, simplify features or regularize.</div></div>
+test r2     = 0.8727</pre></div><div class="tip">A large training/validation gap can indicate overfitting, but also sampling variability or distribution shift. Do not repeatedly tune until validation looks perfect.</div></div>
 </details></section><section class="sec"><div class="eyebrow">Step 9 · Calculate Test Score</div><details class="item">
   <summary><span class="chev">›</span><span class="it-title">Final, one-shot evaluation</span><span class="it-sub">unlock the test set only now</span></summary>
   <div class="body"><pre><span class="c"># refit the chosen pipeline on train (+ val), same features/params</span>
 model.fit(X_train, y_train)
 
 <span class="c"># the honest estimate of real-world performance</span>
-test_r2 = model.score(X_test, y_test)</pre><div class="tip">Touch the test set <b>once</b>. Because the pipeline carries every transform, the test data is treated exactly like the training data, no leakage.</div></div>
+test_r2 = model.score(X_test, y_test)</pre><div class="tip">Touch the test set <b>once</b>. Because the pipeline carries every transform, test inputs reuse the fitted transformations. A pipeline does not prevent leakage already present in the input features.</div></div>
 </details></section><section class="sec"><div class="eyebrow">Step 10 · Deploy &amp; Monitor</div><details class="item">
   <summary><span class="chev">›</span><span class="it-title">Ship it, then watch it</span><span class="it-sub">the model is a product, not a result</span></summary>
   <div class="body"><pre><span class="k">import</span> joblib
@@ -4542,14 +4542,14 @@ joblib.dump(model, <span class="s">"penguin_model.joblib"</span>)   <span class=
 <span class="c"># serve it, then monitor live performance and retrain on drift</span></pre><div class="tip">Persisting the full <code>Pipeline</code> means preprocessing ships with the model, no separate feature code to keep in sync.</div></div>
 </details></section><section class="sec"><div class="eyebrow">Gotchas</div><details class="item" open>
   <summary><span class="chev">›</span><span class="it-title">Feature-engineering traps</span><span class="it-sub">the ones that bite beginners</span></summary>
-  <div class="body"><table class="ref-table"><tr><td>data leakage</td><td>always <code>fit</code> on train only, then <code>transform</code> test with the same object</td></tr><tr><td>numpy vs pandas</td><td>add <code>.set_output(transform="pandas")</code> to keep DataFrames</td></tr><tr><td><code>drop="first"</code></td><td>use it with linear models to avoid multicollinearity</td></tr><tr><td>impute before expand</td><td><code>PolynomialFeatures</code> and many transformers reject <code>NaN</code></td></tr><tr><td>sparse vs dense</td><td><code>OneHotEncoder(sparse_output=False)</code> for a readable array</td></tr><tr><td>order in Pipeline</td><td>impute THEN scale/encode; steps run top to bottom</td></tr></table></div>
+  <div class="body"><table class="ref-table"><tr><td>data leakage</td><td>always <code>fit</code> on train only, then <code>transform</code> test with the same object</td></tr><tr><td>numpy vs pandas</td><td>add <code>.set_output(transform="pandas")</code> on supported dense-output transformers</td></tr><tr><td><code>drop="first"</code></td><td>optional for unregularized linear models with an intercept; not a universal rule</td></tr><tr><td>impute before expand</td><td><code>PolynomialFeatures</code> and many transformers reject <code>NaN</code></td></tr><tr><td>sparse vs dense</td><td><code>OneHotEncoder(sparse_output=False)</code> for a readable array</td></tr><tr><td>order in Pipeline</td><td>impute THEN scale/encode; steps run top to bottom</td></tr></table></div>
 </details></section>
   </div>
 </main>
 <footer>
   Built from the <strong>neuefische ds-feature-engineering</strong> curriculum, structured around its
   <strong>machine_learning_workflow.md</strong> · styled after the <strong>nf-spiced</strong> theme ·
-  examples generated live from <code>penguins.csv</code><br>
+  illustrative snapshots from <code>penguins.csv</code><br>
   Reference: <a href="https://scikit-learn.org/stable/modules/compose.html">scikit-learn: Pipelines & composite estimators</a>
 </footer>
 <script>
