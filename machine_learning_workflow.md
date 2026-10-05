@@ -3,7 +3,7 @@
 
 ![workflow_unsplash.jpg](./assets/workflow_unsplash.jpg)
 
-_Photo by Campaign Creators on Unsplash_
+Photo by Campaign Creators on Unsplash.
 
 ## Goal of Machine Learning
 
